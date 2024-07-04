@@ -247,7 +247,7 @@ def menu():
             name = input("Enter matrix name: ")
             if name in data.keys():
                 try:
-                    norm_A_inv = infinity_matrix_norm(inverse_matrix(data[name]))
+                    norm_A_inv = infinty_matrix_norm(inverse_matrix(data[name]))
                     print(f"Infinity norm of inverse matrix {name}: {norm_A_inv:.4f}")
                 except ValueError as e:
                     print(e)
