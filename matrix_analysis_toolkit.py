@@ -192,7 +192,7 @@ def menu():
         print("1. Enter a new matrix")
         print("2. Display save matrix")
         print("3. Find inverse of matrix")
-        print("4. Calculate norm of current matrix")
+        print("4. Calculate norm of matrix")
         print("5. Calculate norm of inverse matrix")
         print("6. Calculate condition number of matrix")
         print("7. print all matrices")
