@@ -242,26 +242,36 @@ def menu():
                 print(f"Norm of matrix {name}: {norm_A:.4f}")
             else:
                 print("No matrix found. Please enter a matrix first.")
-                
+    
         elif choice == '5':
             name = input("Enter matrix name: ")
             if name in data.keys():
-                norm_A = infinty_matrix_norm(inverse_matrix(data[name]))
-                print(f"Norm of inverse matrix {name}: {norm_A:.4f}")
+                try:
+                    norm_A_inv = infinity_matrix_norm(inverse_matrix(data[name]))
+                    print(f"Infinity norm of inverse matrix {name}: {norm_A_inv:.4f}")
+                except ValueError as e:
+                    print(e)
             else:
                 print("No matrix found. Please enter a matrix first.")
 
         elif choice == '6':
             name = input("Enter matrix name: ")
             if name in data.keys():
-                cond_A = condA(data[name])
-                print(f"Condition number of A: {cond_A:.4f}")
+                try:
+                    cond_A = condA(data[name])
+                    print(f"Condition number of matrix {name}: {cond_A:.4f}")
+                except ValueError as e:
+                    print(e)
             else:
                 print("No matrix found. Please enter a matrix first.")
+
         elif choice == '7':
-            for i in range(data.keys()):
-                print(f"Matrix {i}:")
-                print_matrix(data[i])
+            if data:
+                for name, matrix in data.items():
+                    print(f"\nMatrix {name}:")
+                    print_matrix(matrix)
+            else:
+                print("No matrices saved.")
         elif choice == '8':
             print("Exiting...")
             break
