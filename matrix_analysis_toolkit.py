@@ -187,6 +187,7 @@ def input_matrix():
     
 def menu():
     data = {}
+    data['A'] = [[0,1,2][3,124,2][2,1,23]]
     while True:
         print("\nMatrix Analysis Toolkit")
         print("1. Enter a new matrix")
