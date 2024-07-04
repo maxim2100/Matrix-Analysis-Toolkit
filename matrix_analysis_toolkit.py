@@ -1,11 +1,7 @@
-import json
-
 
 UNIT_MATRIX = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
 VECTOR_ZIRO = [0, 0, 0]
 MATRIX_ZIRO = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
-
-
 
 def vector_1_norm(vector):
     """Calculate the 1-norm of a 3x1 vector."""
@@ -15,21 +11,112 @@ def vector_inf_norm(vector):
     """Calculate the infinity-norm of a 3x1 vector."""
     return max(abs(v) for v in vector)
 
-def matrix_1_norm(matrix):
+def one_matrix_norm(matrix):
     """Calculate the 1-norm of a 3x3 matrix."""
     return max(sum(abs(matrix[i][j]) for i in range(3)) for j in range(3))
 
-def matrix_inf_norm(matrix):
+def infinty_matrix_norm(matrix):
     """Calculate the infinity-norm of a 3x3 matrix."""
     return max(sum(abs(matrix[i][j]) for j in range(3)) for i in range(3))
 
-def condition_number(matrix):
+def condA(matrix):
     """Calculate the condition number of the matrix."""
-    matrix_inv = find_inverse(matrix)
-    norm_A = matrix_inf_norm(matrix)
-    norm_A_inv = matrix_inf_norm(matrix_inv)
+    matrix_inv = inverse_matrix(matrix)
+    norm_A = infinty_matrix_norm(matrix)
+    norm_A_inv = infinty_matrix_norm(matrix_inv)
     cond_A = norm_A * norm_A_inv
     return cond_A
+
+def equal_matrix(A, B):
+    for i in range(3):
+        for j in range(3):
+            if A[i][j]!= B[i][j]:
+                return False
+    return True
+
+
+# function for elementary operation of swapping two rows
+def swap_row(matrix, i, j):
+    for k in range(3):
+        temp = matrix[i][k]
+        matrix[i][k] = matrix[j][k]
+        matrix[j][k] = temp
+    return matrix
+
+def pivot_all(matrix):
+    a = MATRIX_ZIRO
+    l = VECTOR_ZIRO
+    element_matrix = UNIT_MATRIX
+    for i in range(3):
+        for j in range(3):
+            col = 0
+            if i+j >= 3:
+                col=i+j-3
+            else:
+                col=j+i
+            a[i][j] = matrix[j][col]
+    
+    for i in range(3):
+        l[i] = vector_1_norm(a[i])
+        if 0 in a[i]:
+            l[i] = -1
+    max_index = l.index(max(l))
+    if max_index== 0:
+        return matrix
+    elif max_index == 1:
+        matrix=swap_row(matrix,2,0)
+        element_matrix=swap_row(element_matrix,2,0)
+        matrix=swap_row(matrix,1,2)
+        element_matrix=swap_row(element_matrix,1,2)
+    elif max_index == 2:
+        matrix=swap_row(matrix,0,1)
+        element_matrix=swap_row(element_matrix,0,1)
+        matrix=swap_row(matrix,1,2)
+        element_matrix=swap_row(element_matrix,1,2)
+    return matrix,element_matrix
+
+
+
+def copy_matrix(matrix):
+    """Create a copy of a 3x3 matrix."""
+    copy = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    for i in range(3):
+        for j in range(3):
+            copy[i][j] = matrix[i][j]
+    return copy
+
+def inverse_matrix(matrix):
+    inverse_matrix = copy_matrix(UNIT_MATRIX)
+    matrix = copy_matrix(matrix)
+
+    for i in range(3):
+        if matrix[i][i] == 0:
+            for k in range(i + 1, 3):
+                if matrix[k][i] != 0:
+                    swap_row(matrix, i, k)
+                    swap_row(inverse_matrix, i, k)
+                    break
+            if matrix[i][i] == 0:
+                raise ValueError("Matrix is singular and cannot be inverted.")
+
+        diag_element = matrix[i][i]
+        for j in range(3):
+            matrix[i][j] /= diag_element
+            inverse_matrix[i][j] /= diag_element
+
+        for k in range(3):
+            if k != i:
+                factor = matrix[k][i]
+                for j in range(3):
+                    matrix[k][j] -= factor * matrix[i][j]
+                    inverse_matrix[k][j] -= factor * inverse_matrix[i][j]
+
+    return inverse_matrix
+
+
+ 
+
+
 
 def vector_multiplication(a, b):
     """Multiply two vectors(a 1x3 * b 3x1) return the result as number."""
@@ -68,50 +155,15 @@ def matrix_multiplication(A, B):
                 result[i][j] += A[i][k] * B[k][j]
     return result
 
-def find_inverse(matrix):
-    """Find the inverse of a 3x3 matrix using elementary row operations."""
-    n = 3
-    identity_matrix = [[1 if i == j else 0 for j in range(n)] for i in range(n)]
-    augmented_matrix = [matrix[i] + identity_matrix[i] for i in range(n)]
-
-    # Perform Gaussian elimination
-    for i in range(n):
-        # Make the diagonal contain all 1's
-        diag_element = augmented_matrix[i][i]
-        augmented_matrix[i] = [elem / diag_element for elem in augmented_matrix[i]]
-        
-        # Make the other elements in the column contain 0's
-        for j in range(n):
-            if i != j:
-                row_factor = augmented_matrix[j][i]
-                augmented_matrix[j] = [augmented_matrix[j][k] - row_factor * augmented_matrix[i][k] for k in range(2 * n)]
-                
-    inverse_matrix = [row[n:] for row in augmented_matrix]
-    return inverse_matrix
 
 
-def infinty_matrix_norm():
-    pass
-def one_matrix_norm():
-    pass
+
+
+
 def print_matrix(matrix):
     """Print the matrix in a readable format."""
     for row in matrix:
         print(" ".join(f"{elem:.4f}" for elem in row))
-
-def save_data(data, filename='matrix_data.json'):
-    """Save matrix data to a JSON file."""
-    with open(filename, 'w') as f:
-        json.dump(data, f, indent=4)
-
-
-def load_data(filename='matrix_data.json'):
-    """Load matrix data from a JSON file."""
-    try:
-        with open(filename, 'r') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return {}
 
 
 def input_vector():
@@ -119,85 +171,98 @@ def input_vector():
     print("Enter the elements of the 3x1 vector:")
     vector = VECTOR_ZIRO
     for i in range(3):
-        vector = float(input("Enter element {i+1}: "))
+        vector = float(input(f"Enter element {i+1}: "))
     return vector
-
-
 
 def input_matrix():
     input_matrix=[]
-    row=[]
     print("Enter a 3x3 matrix input by rows")
     for i in range(3):
         print(f"Enter row {i+1}: ")
+        row=[]
         for j in range(3):
-            row.append(input())
+            row.append(float(input(f"Enter element {j+1}: ")))
         input_matrix.append(row)
     return input_matrix
-
-def menu():
-    data = load_data()
     
+def menu():
+    data = {}
     while True:
         print("\nMatrix Analysis Toolkit")
         print("1. Enter a new matrix")
-        print("2. Display current matrix")
-        print("3. Find inverse of current matrix")
+        print("2. Display save matrix")
+        print("3. Find inverse of matrix")
         print("4. Calculate norm of current matrix")
         print("5. Calculate norm of inverse matrix")
-        print("6. Calculate condition number of current matrix")
-        print("7. Save current matrix and calculations")
-        print("8. Load saved matrix and calculations")
-        print("9. Exit")
-        
+        print("6. Calculate condition number of matrix")
+        print("7. print all matrices")
+        print("8. Exit")
         choice = input("Choose an option: ")
-        
+
         if choice == '1':
+            while True:
+                name = input("Enter matrix name: ")
+                if name in data.keys():
+                    print("A matrix with that name already exists. Please enter a new name.")
+                else:
+                    break
             matrix = input_matrix()
-            data['matrix'] = matrix
+            data[name] = matrix
             print("Matrix entered successfully.")
+
         elif choice == '2':
-            if 'matrix' in data:
-                print("Current Matrix A:")
-                print_matrix(data['matrix'])
+            name = input("Enter matrix name: ")
+            if name in data.keys():
+                print(f"Matrix {name}:")
+                print_matrix(data[name])
             else:
                 print("No matrix found. Please enter a matrix first.")
+
         elif choice == '3':
-            if 'matrix' in data:
-                matrix_inv = find_inverse(data['matrix'])
-                data['inverse'] = matrix_inv
-                print("Inverse of A:")
+            name = input("Enter matrix name: ")
+            if name in data.keys():
+                matrix_inv = inverse_matrix(data[name])
+                print(f"matrix {name} inverse: ")
                 print_matrix(matrix_inv)
+                if input("Add inverse to data(Y/N): ")=='Y':
+                    while True:
+                        name = input("Enter name for inverse matrix: ")
+                        if name in data.keys():
+                            print("A matrix with that name already exists. Please enter a new name.")
+                        else:
+                            data[name] = matrix_inv
+                            break
             else:
                 print("No matrix found. Please enter a matrix first.")
+
         elif choice == '4':
-            if 'matrix' in data:
-                norm_A = matrix_inf_norm(data['matrix'])
-                data['norm'] = norm_A
-                print(f"Norm of A: {norm_A:.4f}")
+            name = input("Enter matrix name: ")
+            if name in data.keys():
+                norm_A = infinty_matrix_norm(data[name])
+                print(f"Norm of matrix {name}: {norm_A:.4f}")
             else:
                 print("No matrix found. Please enter a matrix first.")
+                
         elif choice == '5':
-            if 'inverse' in data:
-                norm_A_inv = matrix_inf_norm(data['inverse'])
-                data['norm_inverse'] = norm_A_inv
-                print(f"Norm of A^-1: {norm_A_inv:.4f}")
+            name = input("Enter matrix name: ")
+            if name in data.keys():
+                norm_A = infinty_matrix_norm(inverse_matrix(data[name]))
+                print(f"Norm of inverse matrix {name}: {norm_A:.4f}")
             else:
-                print("No inverse matrix found. Please calculate the inverse first.")
+                print("No matrix found. Please enter a matrix first.")
+
         elif choice == '6':
-            if 'matrix' in data:
-                cond_A = condition_number(data['matrix'])
-                data['condition_number'] = cond_A
+            name = input("Enter matrix name: ")
+            if name in data.keys():
+                cond_A = condA(data[name])
                 print(f"Condition number of A: {cond_A:.4f}")
             else:
                 print("No matrix found. Please enter a matrix first.")
         elif choice == '7':
-            save_data(data)
-            print("Data saved successfully.")
+            for i in range(data.keys()):
+                print(f"Matrix {i}:")
+                print_matrix(data[i])
         elif choice == '8':
-            data = load_data()
-            print("Data loaded successfully.")
-        elif choice == '9':
             print("Exiting...")
             break
         else:
