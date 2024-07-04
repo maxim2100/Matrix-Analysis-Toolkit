@@ -1,4 +1,3 @@
-
 UNIT_MATRIX = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
 VECTOR_ZIRO = [0, 0, 0]
 MATRIX_ZIRO = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
@@ -28,15 +27,15 @@ def condA(matrix):
     return cond_A
 
 def equal_matrix(A, B):
+    """Check if two 3x3 matrices A and B are equal."""
     for i in range(3):
         for j in range(3):
             if A[i][j]!= B[i][j]:
                 return False
     return True
 
-
-# function for elementary operation of swapping two rows
 def swap_row(matrix, i, j):
+    """Perform an elementary row operation to swap two rows of a 3x3 matrix."""
     for k in range(3):
         temp = matrix[i][k]
         matrix[i][k] = matrix[j][k]
@@ -44,6 +43,7 @@ def swap_row(matrix, i, j):
     return matrix
 
 def pivot_all(matrix):
+    """Pivot a 3x3 matrix and return the pivoted matrix and the elementary matrix used."""
     a = MATRIX_ZIRO
     l = VECTOR_ZIRO
     element_matrix = UNIT_MATRIX
@@ -75,8 +75,6 @@ def pivot_all(matrix):
         element_matrix=swap_row(element_matrix,1,2)
     return matrix,element_matrix
 
-
-
 def copy_matrix(matrix):
     """Create a copy of a 3x3 matrix."""
     copy = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
@@ -86,6 +84,7 @@ def copy_matrix(matrix):
     return copy
 
 def inverse_matrix(matrix):
+    """Compute the inverse of a 3x3 matrix."""
     inverse_matrix = copy_matrix(UNIT_MATRIX)
     matrix = copy_matrix(matrix)
 
@@ -113,13 +112,8 @@ def inverse_matrix(matrix):
 
     return inverse_matrix
 
-
- 
-
-
-
 def vector_multiplication(a, b):
-    """Multiply two vectors(a 1x3 * b 3x1) return the result as number."""
+    """Multiply two vectors(a 1x3 * b 3x1) and return the result as a number."""
     if len(a) != 3 or len(b) != 3:
         raise ValueError("Both vectors must be of length 3.")
     for i in range(3):
@@ -128,8 +122,6 @@ def vector_multiplication(a, b):
 
 def matrix_and_vector_multiplication(A, x):
     """Multiply matrix A 3x3 by vector x 3x1."""
-    #aij - The member in the i-th row and the j-th column
-
     result = [0, 0, 0]
     result1 = [0, 0, 0]
     for i in range(3):
@@ -144,10 +136,8 @@ def matrix_and_vector_multiplication(A, x):
 
     return result
 
-
 def matrix_multiplication(A, B):
     """Multiply two 3x3 matrices A and B."""
-    # The member in the i-th row and the j-th column
     result = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
     for i in range(3):
         for j in range(3):
@@ -155,16 +145,10 @@ def matrix_multiplication(A, B):
                 result[i][j] += A[i][k] * B[k][j]
     return result
 
-
-
-
-
-
 def print_matrix(matrix):
     """Print the matrix in a readable format."""
     for row in matrix:
         print(" ".join(f"{elem:.4f}" for elem in row))
-
 
 def input_vector():
     """Get a 3x1 vector from user input."""
@@ -175,17 +159,19 @@ def input_vector():
     return vector
 
 def input_matrix():
-    input_matrix=[]
+    """Get a 3x3 matrix from user input."""
+    input_matrix = []
     print("Enter a 3x3 matrix input by rows")
     for i in range(3):
         print(f"Enter row {i+1}: ")
-        row=[]
+        row = []
         for j in range(3):
             row.append(float(input(f"Enter element {j+1}: ")))
         input_matrix.append(row)
     return input_matrix
     
 def menu():
+    """Menu for Matrix Analysis Toolkit."""
     data = {}
     data['A'] = [[0,1,2],[3,124,2],[2,1,23]]
     while True:
@@ -196,7 +182,7 @@ def menu():
         print("4. Calculate norm of matrix")
         print("5. Calculate norm of inverse matrix")
         print("6. Calculate condition number of matrix")
-        print("7. print all matrices")
+        print("7. Print all matrices")
         print("8. Exit")
         choice = input("Choose an option: ")
 
@@ -223,9 +209,9 @@ def menu():
             name = input("Enter matrix name: ")
             if name in data.keys():
                 matrix_inv = inverse_matrix(data[name])
-                print(f"matrix {name} inverse: ")
+                print(f"Matrix {name} inverse: ")
                 print_matrix(matrix_inv)
-                if input("Add inverse to data(Y/N): ")=='Y':
+                if input("Add inverse to data(Y/N): ") == 'Y':
                     while True:
                         name = input("Enter name for inverse matrix: ")
                         if name in data.keys():
@@ -278,7 +264,6 @@ def menu():
             break
         else:
             print("Invalid choice. Please try again.")
-
 
 if __name__ == "__main__":
     menu()
