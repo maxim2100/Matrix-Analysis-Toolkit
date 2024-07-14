@@ -1,4 +1,12 @@
 import numpy as np
+# https://github.com/maxim2100/Matrix-Analysis-Toolkit.git
+
+# maxim teslenko 321916116
+# rom ihia 207384934
+# Rony Bubnovsky 314808825
+# Bar Levi 314669664 
+# Aviel Esperansa 324062116
+
 
 UNIT_MATRIX = np.eye(3)
 VECTOR_ZERO = np.zeros(3)
